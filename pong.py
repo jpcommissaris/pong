@@ -30,6 +30,7 @@ lose = 0;  # 0: none, 1: p1, 2: p2
 
 
 class Ball:
+    
     x=0; y=0; vx=0; vy=0; radius=0;
     def __init__(self, xP, yP, vxx,vyy, r):
         self.x = xP
@@ -46,12 +47,10 @@ class Ball:
     def bounceH(s):
         s.vx = -s.vx
     #endgame
-    def lose1(s):
-        g.scene = 3
-        g.lose = 1
-    def lose2(s):
-        g.scene = 3
-        g.lose = 2
+    def lose(s):
+        global scene
+        scene = 1
+        lose = 1
 
 class Panel:
     len = 0; vy = 0; x = 0; y = 0;
@@ -61,11 +60,15 @@ class Panel:
         self.y = yP
         self.x = xP
     #movement
+    def checkCollision(s, a):
+        l= a.x-a.radius
+        r= a.x+a.radius
+        bool = (a.y >= s.y-s.len and a.y <= s.y+s.len and (l<=edge+.1 or r>=length-edge-.1))
+        return bool
     def up(s):
         s.y -= s.vy
     def down(s):
         s.y += s.vy
-
 
 
 
@@ -77,46 +80,47 @@ edge = 10
 b = Ball(length/2,width/2,speed,speed,15)
 p1 = Panel(30,3,edge,width/2)
 p2 = Panel(30,3,length-edge,width/2)
-
+print(1)
 
 # --- game scenes ---
 def doScene1():
     global scene
-    # space to start
-    scene = 2
+    #game over someone wins, space to start
+    keys=pygame.key.get_pressed()
+    if keys[pygame.K_SPACE]:
+        scene =2
+        b.x = length/2
+        b.y = width/2
+        print(2)
 
 def doScene2():
     global scene
-    # move ball
-    b.move()
+    tick = 60
     l= b.x-b.radius
     r= b.x+b.radius
-    if(b.y-b.radius < 0+.1 or b.y+b.radius > width-.1):
-        b.bounceV()
     if(l < 0+.1 or r > length-.1):
-        b.bounceH()
-    if(b.y >= p1.y-p1.len and b.y <= p1.y+p1.len and l<=edge+.1):
-        b.bounceH()
-    if(b.y >= p2.y-p2.len and b.y <= p2.y+p2.len and r>=length-edge-.1):
-        b.bounceH()
-    # move panels
-    move_ticker = 0
-    keys=pygame.key.get_pressed()
-    if keys[pygame.K_DOWN]:
-        p2.down()
-    if keys[pygame.K_UP]:
-        p2.up()
-    if keys[pygame.K_s]:
-        p1.down()
-    if keys[pygame.K_w]:
-        p1.up()
+        b.lose()
+        
+    else:
+        # move ball
+        b.move()
+        if(b.y-b.radius < 0+.1 or b.y+b.radius > width-.1):
+            b.bounceV()
+        if(p1.checkCollision(b) or p2.checkCollision(b)):
+            b.bounceH()
 
-def doScene3():
-    global scene
-    #game over someone wins, space to start
-    print(3)
-    scene = 2
-    print(2)
+        # move panels
+        keys=pygame.key.get_pressed()
+        if keys[pygame.K_DOWN]:
+            p2.down()
+        if keys[pygame.K_UP]:
+            p2.up()
+        if keys[pygame.K_s]:
+            p1.down()
+        if keys[pygame.K_w]:
+            p1.up()
+
+    
 
 # --- game loop ---
 while not done:
@@ -131,9 +135,6 @@ while not done:
         doScene1()
     elif(scene == 2):
         doScene2()
-    elif(scene == 3):
-        doScene3()
-
     # --- repaints screen ---
     screen.fill(WHITE)
  
