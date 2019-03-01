@@ -8,6 +8,7 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
+BLUE = (0,0,255)
 pygame.init()
  
 # Set up the screen [width, height]
@@ -23,10 +24,7 @@ done = False
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 
-# --- global variables ---
-speed = 3;
-scene = 1;
-lose = 0;  # 0: none, 1: p1, 2: p2
+
 
 
 class Ball:
@@ -75,7 +73,10 @@ class Panel:
 
 # main program
 
-# --- objects ---
+# --- global variables ---
+speed = 3;
+scene = 1;
+lose = 0;  # 0: none, 1: p1, 2: p2
 edge = 10
 b = Ball(length/2,width/2,speed,speed,15)
 p1 = Panel(30,3,edge,width/2)
@@ -100,7 +101,7 @@ def doScene2():
     r= b.x+b.radius
     if(l < 0+.1 or r > length-.1):
         b.lose()
-        
+    
     else:
         # move ball
         b.move()
@@ -141,7 +142,7 @@ while not done:
     # --- new drawings ---
     pygame.draw.circle(screen, GREEN,(int(b.x),int(b.y)),int(b.radius),0)
     pygame.draw.line(screen,RED,(p1.x, p1.y+p1.len), (p1.x, p1.y-p1.len), 4) #place color ps pe width
-    pygame.draw.line(screen,RED,(p2.x, p2.y+p1.len), (p2.x, p2.y-p1.len), 4)
+    pygame.draw.line(screen,BLUE,(p2.x, p2.y+p1.len), (p2.x, p2.y-p1.len), 4)
 
     # Updates screen with new drawings
     pygame.display.flip()
