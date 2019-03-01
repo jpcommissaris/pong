@@ -61,7 +61,9 @@ class Ball:
         s.vy = -s.vy
     def bounceH(s,p):
         s.vx = -s.vx +2*p.vx
-        s.vy = -s.vy +2*p.vy
+        s.vy = s.vy +2*p.vy
+    def bounceH2(s):
+        s.vx = -s.vx
     #endgame
     def lose(s):
         global scene, score2, score1, lose, p1Score, p2Score
@@ -109,12 +111,15 @@ vy = 4
 b = Ball(length/2,width/2,3,0,15)
 p1 = Panel(30,vx,vy,edge,width/2)
 p2 = Panel(30,vx,vy,length-edge,width/2)
+p3 = Panel(0,0,0,0,0) # dummy
 
 font = pygame.font.SysFont('helvetica', 20)
 score1 = 0
 score2 = 0
 p1Score = font.render(str(score1), True, BLACK)
 p2Score = font.render(str(score2), True, BLACK)
+goalT = width/4
+goalB = 3*width/4
 
 # --- game scenes ---
 def doScene1():
@@ -131,25 +136,33 @@ def doScene1():
         b.vy = 0
 
 def doScene2():
-    global scene, tick1, tick2,lose
+    global scene, tick1, tick2, lose
     
     l= b.x-b.radius
     r= b.x+b.radius
     if(l < 0-8):
-        lose =1
-        b.lose()
-        lose=0
+        if(b.y > goalT and b.y < goalB):
+            lose =1
+            b.lose()
+            lose=0
+        else:
+            b.bounceH2()
+            b.move()
     elif(r > length+8):
-        lose=2
-        b.lose()
-        lose=0
+        if(b.y > goalT and b.y < goalB):
+            lose =2
+            b.lose()
+            lose=0
+        else:
+            b.bounceH2()
+            b.move()
     else:
         #print(b.vx)
         # checks collision once every 3 frames
         if(tick1 < 6):
-            tick1 += 1
+            tick1 += 2
         if(tick2 < 6):
-            tick2 += 1
+            tick2 += 2
         if(b.y-b.radius < 0+.1 or b.y+b.radius > width-.1):
             b.bounceV()
         if(p1.checkCollision(b) and tick1 == 6):
@@ -223,9 +236,19 @@ while not done:
     screen.fill(WHITE)
  
     # --- new drawings ---
+    #ball
     pygame.draw.circle(screen, GREEN,(int(b.x),int(b.y)),int(b.radius),0)
+    # panels
     pygame.draw.line(screen,RED,(p1.x, p1.y+p1.len), (p1.x, p1.y-p1.len), 4) #place color ps pe width
     pygame.draw.line(screen,BLUE,(p2.x, p2.y+p1.len), (p2.x, p2.y-p1.len), 4)
+    #lines
+    pygame.draw.line(screen,BLACK,(0, 0), (0, goalT), 2)
+    pygame.draw.line(screen,BLACK,(0, width), (0, goalB), 2)
+    pygame.draw.line(screen,BLACK,(length, 0), (length, goalT), 6)
+    pygame.draw.line(screen,BLACK,(length, width), (length, goalB), 6)
+    pygame.draw.line(screen,BLACK,(0, 0), (length, 0), 2)
+    pygame.draw.line(screen,BLACK,(0, width), (length, width), 6)
+
     screen.blit(p1Score,(5,5))
     screen.blit(p2Score,(length-15,5))
 
