@@ -62,7 +62,6 @@ class Ball:
     def bounceH(s,p):
         s.vx = -s.vx +2*p.vx
         s.vy = -s.vy +2*p.vy
-        print("bounce")
     #endgame
     def lose(s):
         global scene, score2, score1, lose, p1Score, p2Score
@@ -136,11 +135,11 @@ def doScene2():
     
     l= b.x-b.radius
     r= b.x+b.radius
-    if(l < 0+10):
+    if(l < 0-8):
         lose =1
         b.lose()
         lose=0
-    elif(r > length-10):
+    elif(r > length+8):
         lose=2
         b.lose()
         lose=0
@@ -164,7 +163,7 @@ def doScene2():
         vt = math.sqrt(b.vx*b.vx+b.vy*b.vy)
         vtd = math.atan(b.vy/b.vx)
         if(vt > 3.5):
-            sd = .1 + vt/100
+            sd = .05 + vt/100
             sdx = abs(sd*math.cos(vtd))
             sdy = abs(sd*math.sin(vtd))
 
