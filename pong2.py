@@ -100,15 +100,16 @@ class Panel:
 # main program
 
 # --- global variables ---
-speed = 3.5;
+speed = 4;
 scene = 1;
 lose = 0;  # 0: none, 1: p1, 2: p2
 tick1 = 6
 tick2 = 6
+vBall = 10
 edge = 10
 vx = 4
 vy = 4
-b = Ball(length/2,width/2,3,0,15)
+b = Ball(length/2,width/2,vBall,0,15)
 p1 = Panel(30,vx,vy,edge,width/2)
 p2 = Panel(30,vx,vy,length-edge,width/2)
 p3 = Panel(0,0,0,0,0) # dummy
@@ -136,7 +137,7 @@ def doScene1():
         b.vy = 0
 
 def doScene2():
-    global scene, tick1, tick2, lose
+    global scene, tick1, tick2, lose, vBall
     
     l= b.x-b.radius
     r= b.x+b.radius
@@ -163,7 +164,7 @@ def doScene2():
             tick1 += 2
         if(tick2 < 6):
             tick2 += 2
-        if(b.y-b.radius < 0+.1 or b.y+b.radius > width-.1):
+        if((b.y-b.radius < 0+.1 and b.vy <= 0 )or (b.y+b.radius > width-.1 and b.vy >= 0)):
             b.bounceV()
         if(p1.checkCollision(b) and tick1 == 6):
             b.bounceH(p1)
@@ -175,7 +176,7 @@ def doScene2():
         #slows down ball
         vt = math.sqrt(b.vx*b.vx+b.vy*b.vy)
         vtd = math.atan(b.vy/b.vx)
-        if(vt > 3.5):
+        if(vt > vBall +.5):
             sd = .05 + vt/100
             sdx = abs(sd*math.cos(vtd))
             sdy = abs(sd*math.sin(vtd))
